@@ -8,14 +8,20 @@ from googleapiclient.discovery import build
 # If modifying these scopes, delete the file google_token.pickle.
 SCOPES = ['https://www.googleapis.com/auth/calendar']
 
+here = os.path.dirname(os.path.abspath(__file__))
 
-def auth():
+
+def __to_abs_path(local_path):
+    return os.path.join(here, local_path)
+
+
+def _auth():
     creds = None
     # The file google_token.pickle stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
     # time.
-    if os.path.exists('google_token.pickle'):
-        with open('google_token.pickle', 'rb') as token:
+    if os.path.exists(__to_abs_path('google_token.pickle')):
+        with open(__to_abs_path('google_token.pickle'), 'rb') as token:
             creds = pickle.load(token)
     # If there are no (valid) credentials available, let the user log in.
     if not creds or not creds.valid:
@@ -24,21 +30,22 @@ def auth():
             pass
         else:
             flow = InstalledAppFlow.from_client_secrets_file(
-                'google_credentials.json', SCOPES)
+                __to_abs_path('google_credentials.json'), SCOPES)
             creds = flow.run_local_server(port=0)
         # Save the credentials for the next run
-        with open('google_token.pickle', 'wb') as token:
+        with open(__to_abs_path('google_token.pickle'), 'wb') as token:
             pickle.dump(creds, token)
 
     return build('calendar', 'v3', credentials=creds)
 
 
 def clear(calendar):
-    service = auth()
+    service = _auth()
 
     page_token = None
     while True:
         events = service.events().list(calendarId=calendar, pageToken=page_token).execute()
+        page_token = events.get('nextPageToken', None)
         for event in events['items']:
             service.events().delete(calendarId=calendar, eventId=event['id']).execute()
         if not page_token:
@@ -46,7 +53,7 @@ def clear(calendar):
 
 
 def create_event(fb_event, calendar):
-    service = auth()
+    service = _auth()
 
     event = {
         'summary': fb_event['name'],
