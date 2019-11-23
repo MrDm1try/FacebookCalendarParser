@@ -29,12 +29,13 @@ def _auth():
             creds.refresh(Request())
             pass
         else:
-            flow = InstalledAppFlow.from_client_secrets_file(
-                __to_abs_path('google_credentials.json'), SCOPES)
-            creds = flow.run_local_server(port=0)
-        # Save the credentials for the next run
-        with open(__to_abs_path('google_token.pickle'), 'wb') as token:
-            pickle.dump(creds, token)
+            raise RuntimeError("Could not authorize to google calendar. Please update the token.")
+        #     flow = InstalledAppFlow.from_client_secrets_file(
+        #         __to_abs_path('google_credentials.json'), SCOPES)
+        #     creds = flow.run_local_server(port=0)
+        # # Save the credentials for the next run
+        # with open(__to_abs_path('google_token.pickle'), 'wb') as token:
+        #     pickle.dump(creds, token)
 
     return build('calendar', 'v3', credentials=creds)
 
