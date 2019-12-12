@@ -2,7 +2,6 @@ import os.path
 import pickle
 
 from google.auth.transport.requests import Request
-from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 
 # If modifying these scopes, delete the file google_token.pickle.
@@ -56,17 +55,14 @@ def clear(calendar):
 def create_event(fb_event, calendar):
     service = _auth()
 
-    event = {
-        'summary': fb_event['name'],
-        # 'location': '800 Howard St., San Francisco, CA 94103',
-        'description': fb_event['description'],
-        'start': {
-            'dateTime': fb_event['start_time'],
-        },
-        'end': {
-            'dateTime': fb_event['end_time'],
-        },
-    }
+    event = {'summary': fb_event['name']}
+    # if '' in fb_event:
+    #     event['location'] = '800 Howard St., San Francisco, CA 94103',
+    if 'description' in fb_event:
+        event['description'] = fb_event['description']
+    if 'start_time' in fb_event:
+        event['start'] = {'dateTime': fb_event['start_time']}
+        event['end'] = {'dateTime': fb_event['end_time'] if 'end_time' in fb_event else fb_event['start_time']}
 
     response = service.events().insert(calendarId=calendar, body=event).execute()
 
