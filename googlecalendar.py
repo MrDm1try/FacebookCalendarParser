@@ -28,7 +28,9 @@ def _auth():
             creds.refresh(Request())
             pass
         else:
-            raise RuntimeError("Could not authorize to google calendar. Please update the token.")
+            raise RuntimeError(
+                "Could not authorize to google calendar. Please update the token by uncommenting the lines below (make sure to run on a machine with GUI).")
+        #     from google_auth_oauthlib.flow import InstalledAppFlow
         #     flow = InstalledAppFlow.from_client_secrets_file(
         #         __to_abs_path('google_credentials.json'), SCOPES)
         #     creds = flow.run_local_server(port=0)
