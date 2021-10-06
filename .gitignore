@@ -105,3 +105,9 @@ venv.bak/
 
 # IDE stuff
 .idea/
+
+# App-specific config files
+config.py
+google_credentials.json
+google_token.pickle
+
